@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: api
+    volumes:
+      - ./src/app:/app/app
+      - ./weather.db:/app/weather.db
+    ports:
+      - "8000:8000"
+    depends_on:
+      - init
+
+  init:
+    build: .
+    container_name: init
+    command: >
+      sh -c "
+      python -m app.ingest &&
+      python -m app.analysis
+      "
+    volumes:
+      - ./src/app:/app/app
+      - ./wx_data:/app/wx_data
+      - ./weather.db:/app/weather.db
+
